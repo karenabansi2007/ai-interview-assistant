@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Login – AI Interview Assistant{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-5">
+    <div class="card shadow-sm p-4">
+      <h3 class="mb-1 fw-bold"><i class="bi bi-box-arrow-in-right me-2"></i>Sign In</h3>
+      <p class="text-muted mb-4">Welcome back! Enter your credentials to continue.</p>
+      <form method="post" novalidate>
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="mb-3">
+          <label class="form-label fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}
+          <div class="text-danger small mt-1">{{ field.errors.0 }}</div>
+          {% endif %}
+        </div>
+        {% endfor %}
+        {% if form.non_field_errors %}
+        <div class="alert alert-danger small">{{ form.non_field_errors.0 }}</div>
+        {% endif %}
+        <button type="submit" class="btn btn-primary w-100">Login</button>
+      </form>
+      <p class="text-center mt-3 mb-0 small text-muted">
+        Don't have an account? <a href="{% url 'register' %}">Register here</a>
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}

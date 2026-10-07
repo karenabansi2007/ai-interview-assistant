@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Profile – AI Interview Assistant{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-7">
+    <div class="card shadow-sm p-4">
+      <div class="d-flex align-items-center gap-3 mb-4">
+        <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center text-white fw-bold"
+             style="width:56px;height:56px;font-size:1.5rem;">
+          {{ user.username|first|upper }}
+        </div>
+        <div>
+          <h4 class="mb-0 fw-bold">{{ user.username }}</h4>
+          <small class="text-muted">{{ user.email }}</small>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="row g-2 mb-4">
+        <div class="col-6">
+          <div class="card p-3 text-center border">
+            <div class="fs-3 fw-bold text-primary">{{ profile.total_sessions }}</div>
+            <div class="text-muted small">Completed Sessions</div>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="card p-3 text-center border">
+            <div class="fs-3 fw-bold text-warning">
+              {% if profile.average_score %}{{ profile.average_score }}{% else %}–{% endif %}
+            </div>
+            <div class="text-muted small">Average Score</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Edit form -->
+      <h5 class="fw-semibold mb-3">Edit Profile</h5>
+      <form method="post" novalidate>
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="mb-3">
+          <label class="form-label fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}
+          <div class="text-danger small mt-1">{{ field.errors.0 }}</div>
+          {% endif %}
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary ms-2">Cancel</a>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

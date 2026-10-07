@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block title %}Dashboard – AI Interview Assistant{% endblock %}
+
+{% block content %}
+<!-- Hero greeting -->
+<div class="d-flex align-items-center justify-content-between mb-4">
+  <div>
+    <h2 class="fw-bold mb-1">Hello, {{ user.username }} 👋</h2>
+    <p class="text-muted mb-0">
+      {% if profile.target_role %}Preparing for: <strong>{{ profile.target_role }}</strong>{% else %}Ready to practise your next interview?{% endif %}
+    </p>
+  </div>
+  <a href="{% url 'start_session' %}" class="btn btn-primary px-4">
+    <i class="bi bi-play-fill me-1"></i>New Interview
+  </a>
+</div>
+
+<!-- Stats row -->
+<div class="row g-3 mb-4">
+  <div class="col-sm-4">
+    <div class="card p-3 text-center">
+      <div class="fs-1 fw-bold text-primary">{{ stats.total }}</div>
+      <div class="text-muted small">Total Sessions</div>
+    </div>
+  </div>
+  <div class="col-sm-4">
+    <div class="card p-3 text-center">
+      <div class="fs-1 fw-bold text-success">{{ stats.completed }}</div>
+      <div class="text-muted small">Completed</div>
+    </div>
+  </div>
+  <div class="col-sm-4">
+    <div class="card p-3 text-center">
+      <div class="fs-1 fw-bold text-warning">
+        {% if stats.avg_score %}{{ stats.avg_score|floatformat:1 }}{% else %}–{% endif %}
+      </div>
+      <div class="text-muted small">Avg Score / 10</div>
+    </div>
+  </div>
+</div>
+
+<!-- Recent sessions -->
+<div class="card">
+  <div class="card-header bg-white d-flex justify-content-between align-items-center">
+    <h5 class="mb-0">Recent Sessions</h5>
+    <a href="{% url 'session_list' %}" class="btn btn-sm btn-outline-secondary">View All</a>
+  </div>
+  <div class="card-body p-0">
+    {% if recent %}
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Role</th>
+            <th>Difficulty</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Score</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for s in recent %}
+          <tr>
+            <td><span class="badge-role">{{ s.get_role_display }}</span></td>
+            <td class="text-capitalize">{{ s.difficulty }}</td>
+            <td>{{ s.created_at|date:"M d, Y" }}</td>
+            <td>
+              {% if s.completed %}
+                <span class="badge bg-success-subtle text-success">Completed</span>
+              {% else %}
+                <span class="badge bg-warning-subtle text-warning">In Progress</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if s.score is not None %}
+                {% if s.score >= 7 %}
+                  <span class="score-pill score-high">{{ s.score }}</span>
+                {% elif s.score >= 4 %}
+                  <span class="score-pill score-mid">{{ s.score }}</span>
+                {% else %}
+                  <span class="score-pill score-low">{{ s.score }}</span>
+                {% endif %}
+              {% else %}–{% endif %}
+            </td>
+            <td>
+              {% if s.completed %}
+                <a href="{% url 'session_results' s.pk %}" class="btn btn-sm btn-outline-primary">Results</a>
+              {% else %}
+                <a href="{% url 'session_detail' s.pk %}" class="btn btn-sm btn-outline-secondary">Continue</a>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="text-center py-5 text-muted">
+      <i class="bi bi-clipboard2-x fs-1 d-block mb-2"></i>
+      No sessions yet. <a href="{% url 'start_session' %}">Start your first interview!</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

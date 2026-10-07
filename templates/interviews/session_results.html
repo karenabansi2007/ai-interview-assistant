@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Results – AI Interview Assistant{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-9">
+
+    <!-- Summary header -->
+    <div class="card shadow-sm mb-4 text-center p-4">
+      <div class="mb-2">
+        {% if session.score >= 7 %}
+          <i class="bi bi-trophy-fill text-warning fs-1"></i>
+        {% elif session.score >= 4 %}
+          <i class="bi bi-bar-chart-fill text-info fs-1"></i>
+        {% else %}
+          <i class="bi bi-arrow-up-circle-fill text-secondary fs-1"></i>
+        {% endif %}
+      </div>
+      <h2 class="fw-bold mb-1">Interview Complete!</h2>
+      <p class="text-muted">{{ session.get_role_display }} · {{ session.get_difficulty_display|capfirst }} difficulty</p>
+      <div class="display-4 fw-bold
+        {% if session.score >= 7 %}text-success{% elif session.score >= 4 %}text-warning{% else %}text-danger{% endif %}">
+        {{ session.score }}<small class="fs-5 text-muted fw-normal"> / 10</small>
+      </div>
+      <p class="text-muted mt-1 mb-0">Overall Score</p>
+    </div>
+
+    <!-- Per-question breakdown -->
+    {% for q in questions %}
+    <div class="card mb-3">
+      <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <span class="fw-semibold">Q{{ q.order }}. {{ q.text }}</span>
+        {% if q.score is not None %}
+          {% if q.score >= 7 %}
+            <span class="score-pill score-high">{{ q.score }} / 10</span>
+          {% elif q.score >= 4 %}
+            <span class="score-pill score-mid">{{ q.score }} / 10</span>
+          {% else %}
+            <span class="score-pill score-low">{{ q.score }} / 10</span>
+          {% endif %}
+        {% endif %}
+      </div>
+      <div class="card-body">
+        <!-- User answer -->
+        <h6 class="text-muted fw-semibold mb-1"><i class="bi bi-person me-1"></i>Your Answer</h6>
+        <p class="mb-3">{% if q.user_answer %}{{ q.user_answer }}{% else %}<em class="text-muted">No answer provided.</em>{% endif %}</p>
+
+        <!-- AI Feedback -->
+        <h6 class="text-muted fw-semibold mb-1"><i class="bi bi-robot me-1"></i>AI Feedback</h6>
+        <div class="alert alert-info py-2 mb-3">{{ q.feedback }}</div>
+
+        <!-- Model answer -->
+        <h6 class="text-muted fw-semibold mb-1"><i class="bi bi-lightbulb me-1"></i>Model Answer Guidance</h6>
+        <div class="alert alert-light border py-2 mb-0">{{ q.ai_answer }}</div>
+      </div>
+    </div>
+    {% endfor %}
+
+    <div class="d-flex gap-2 mt-2">
+      <a href="{% url 'start_session' %}" class="btn btn-primary">
+        <i class="bi bi-play-fill me-1"></i>New Interview
+      </a>
+      <a href="{% url 'session_list' %}" class="btn btn-outline-secondary">
+        <i class="bi bi-list-ul me-1"></i>All Sessions
+      </a>
+      <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
+        <i class="bi bi-house me-1"></i>Dashboard
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

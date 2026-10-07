@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}My Sessions – AI Interview Assistant{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h3 class="fw-bold mb-0"><i class="bi bi-list-ul me-2"></i>My Sessions</h3>
+  <a href="{% url 'start_session' %}" class="btn btn-primary">
+    <i class="bi bi-play-fill me-1"></i>New Interview
+  </a>
+</div>
+
+{% if sessions %}
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>#</th>
+          <th>Role</th>
+          <th>Difficulty</th>
+          <th>Questions</th>
+          <th>Date</th>
+          <th>Status</th>
+          <th>Score</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in sessions %}
+        <tr>
+          <td class="text-muted small">{{ s.pk }}</td>
+          <td><span class="badge-role">{{ s.get_role_display }}</span></td>
+          <td class="text-capitalize">{{ s.difficulty }}</td>
+          <td>{{ s.question_count }}</td>
+          <td>{{ s.created_at|date:"M d, Y" }}</td>
+          <td>
+            {% if s.completed %}
+              <span class="badge bg-success-subtle text-success">Completed</span>
+            {% else %}
+              <span class="badge bg-warning-subtle text-warning">In Progress</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if s.score is not None %}
+              {% if s.score >= 7 %}
+                <span class="score-pill score-high">{{ s.score }}</span>
+              {% elif s.score >= 4 %}
+                <span class="score-pill score-mid">{{ s.score }}</span>
+              {% else %}
+                <span class="score-pill score-low">{{ s.score }}</span>
+              {% endif %}
+            {% else %}–{% endif %}
+          </td>
+          <td>
+            {% if s.completed %}
+              <a href="{% url 'session_results' s.pk %}" class="btn btn-sm btn-outline-primary">Results</a>
+            {% else %}
+              <a href="{% url 'session_detail' s.pk %}" class="btn btn-sm btn-outline-secondary">Continue</a>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% else %}
+<div class="card text-center py-5 text-muted">
+  <i class="bi bi-clipboard2-x fs-1 d-block mb-2"></i>
+  <p>You haven't started any sessions yet.</p>
+  <a href="{% url 'start_session' %}" class="btn btn-primary mx-auto" style="width:fit-content">Start Your First Interview</a>
+</div>
+{% endif %}
+{% endblock %}
